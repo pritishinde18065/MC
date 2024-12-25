@@ -1,0 +1,224 @@
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/questionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="What is the capital of France?"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="16dp" />
+
+    <RadioGroup
+        android:id="@+id/optionsGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/option1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Berlin" />
+
+        <RadioButton
+            android:id="@+id/option2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Paris" />
+
+        <RadioButton
+            android:id="@+id/option3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Madrid" />
+
+        <RadioButton
+            android:id="@+id/option4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rome" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/resultText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:textSize="16sp"
+        android:textColor="@color/black" />
+
+
+</LinearLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+java 
+
+
+
+package com.example.calculator;
+
+import android.os.Bundle;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    private TextView questionText, resultText;
+    private RadioGroup optionsGroup;
+    private Button submitButton;
+    private String[] questions = {
+            "What is the capital of France?",
+            "Which planet is known as the Red Planet?",
+            "Who wrote 'Hamlet'?"
+    };
+    private String[][] options = {
+            {"Berlin", "Paris", "Madrid", "Rome"},
+            {"Earth", "Venus", "Mars", "Jupiter"},
+            {"Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"}
+    };
+    private int[] correctAnswers = {1, 2, 1}; // Index of correct options
+    private int currentQuestion = 0;
+    private int score = 0;
+    private ArrayList<String> detailedResults = new ArrayList<>(); // Tracks detailed answers
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        questionText = findViewById(R.id.questionText);
+        optionsGroup = findViewById(R.id.optionsGroup);
+        submitButton = findViewById(R.id.submitButton);
+        resultText = findViewById(R.id.resultText);
+
+        loadQuestion();
+
+        submitButton.setOnClickListener(v -> {
+            int selectedOptionId = optionsGroup.getCheckedRadioButtonId();
+
+            if (selectedOptionId == -1) {
+                // No option selected
+                Toast.makeText(MainActivity.this, "Please select an option!", Toast.LENGTH_SHORT).show();
+            } else {
+                RadioButton selectedOption = findViewById(selectedOptionId);
+                int selectedIndex = optionsGroup.indexOfChild(selectedOption);
+
+                // Store the result details
+                detailedResults.add(
+                        "Q: " + questions[currentQuestion] +
+                                "\nYour Answer: " + options[currentQuestion][selectedIndex] +
+                                "\nCorrect Answer: " + options[currentQuestion][correctAnswers[currentQuestion]]
+                );
+
+                // Check if the selected answer is correct
+                if (selectedIndex == correctAnswers[currentQuestion]) {
+                    score++;
+                    resultText.setText("Correct! 🎉");
+                    resultText.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                } else {
+                    resultText.setText("Wrong! The correct answer is: " +
+                            options[currentQuestion][correctAnswers[currentQuestion]]);
+                    resultText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+                }
+
+                // Load next question or end quiz
+                if (currentQuestion < questions.length - 1) {
+                    currentQuestion++;
+                    loadQuestion();
+                } else {
+                    endQuiz();
+                }
+            }
+        });
+    }
+
+    private void loadQuestion() {
+        // Load the current question and options
+        questionText.setText(questions[currentQuestion]);
+        optionsGroup.clearCheck();
+        optionsGroup.removeAllViews();
+
+        for (int i = 0; i < options[currentQuestion].length; i++) {
+            RadioButton radioButton = new RadioButton(this);
+            radioButton.setText(options[currentQuestion][i]);
+            radioButton.setId(i); // Assign a unique ID
+            optionsGroup.addView(radioButton);
+        }
+
+        resultText.setText(""); // Clear the previous result
+    }
+
+    private void endQuiz() {
+        // End the quiz and display final score
+        questionText.setText("Quiz Completed!");
+        optionsGroup.removeAllViews();
+
+        if (score == 3) {
+            resultText.setText("Congratulations! You got all answers correct! 🎉");
+            resultText.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+        } else if (score == 2) {
+            resultText.setText("Good effort! Better luck next time!");
+            resultText.setTextColor(getResources().getColor(android.R.color.holo_orange_dark));
+        } else {
+            resultText.setText("You got " + score + " correct answers. Keep practicing!");
+            resultText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+        }
+
+        submitButton.setText("View Results");
+        submitButton.setOnClickListener(v -> displayResults());
+    }
+
+    private void displayResults() {
+        // Display detailed results for all questions
+        StringBuilder resultsMessage = new StringBuilder();
+        resultsMessage.append("Your Score: ").append(score).append("/").append(questions.length).append("\n\n");
+        resultsMessage.append("Detailed Results:\n");
+
+        for (String result : detailedResults) {
+            resultsMessage.append(result).append("\n\n");
+        }
+
+        questionText.setText(resultsMessage.toString());
+        resultText.setText(""); // Clear resultText since detailed results are displayed
+        submitButton.setText("Restart");
+        submitButton.setOnClickListener(v -> restartQuiz());
+    }
+
+    private void restartQuiz() {
+        // Reset variables and restart the quiz
+        currentQuestion = 0;
+        score = 0;
+        detailedResults.clear();
+        submitButton.setText("Submit");
+        loadQuestion();
+    }
+}
