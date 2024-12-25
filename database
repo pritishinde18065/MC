@@ -1,0 +1,205 @@
+xml
+
+  <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+    <!-- Name input field -->
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Name"
+        android:inputType="text" />
+    <!-- Email input field -->
+    <EditText
+        android:id="@+id/editTextEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Email"
+        android:inputType="textEmailAddress" />
+    <!-- Age input field -->
+    <EditText
+        android:id="@+id/editTextAge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Age"
+        android:inputType="number" />
+    <!-- Insert Data button -->
+    <Button
+        android:id="@+id/buttonInsert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Insert Data" />
+    <!-- Display Data button -->
+    <Button
+        android:id="@+id/buttonDisplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Display Data" />
+    <!-- Results TextView -->
+    
+    <TextView
+        android:id="@+id/textViewResults"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Results will appear here"
+        android:textSize="16sp" />
+    <!-- Connection Status TextView -->
+    <TextView
+        android:id="@+id/textViewConnectionStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Database is Ready"
+        android:textSize="16sp"
+        android:textColor="@android:color/holo_green_dark" />
+</LinearLayout>
+
+
+
+main.java
+
+
+
+
+package com.example.datasql;
+import androidx.appcompat.app.AppCompatActivity;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+public class MainActivity extends AppCompatActivity {
+    private EditText editTextName, editTextEmail, editTextAge;
+    private Button buttonInsert, buttonDisplay;
+    private TextView textViewResults, textViewConnectionStatus;
+    private DatabaseHelper databaseHelper;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        // Initialize UI elements
+        editTextName = findViewById(R.id.editTextName);
+        editTextEmail = findViewById(R.id.editTextEmail);
+        editTextAge = findViewById(R.id.editTextAge);
+        buttonInsert = findViewById(R.id.buttonInsert);
+        buttonDisplay = findViewById(R.id.buttonDisplay);
+        textViewResults = findViewById(R.id.textViewResults);
+        textViewConnectionStatus = findViewById(R.id.textViewConnectionStatus);
+        // Initialize DatabaseHelper
+        databaseHelper = new DatabaseHelper(this);
+        // Check database connection
+        checkDatabaseConnection();
+        // Insert data into SQLite
+        buttonInsert.setOnClickListener(v -> {
+            String name = editTextName.getText().toString();
+            String email = editTextEmail.getText().toString();
+            int age = Integer.parseInt(editTextAge.getText().toString());
+
+            databaseHelper.insertUser(name, email, age);
+        });
+        // Display all data from SQLite
+        buttonDisplay.setOnClickListener(v -> displayUsers());
+    }
+    // Check database connection
+    private void checkDatabaseConnection() {
+        textViewConnectionStatus.setText("Database is Ready");
+
+        textViewConnectionStatus.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+    }
+    // Display all users from the database
+    private void displayUsers() {
+        Cursor cursor = databaseHelper.getAllUsers();
+        StringBuilder results = new StringBuilder();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                String email = cursor.getString(cursor.getColumnIndex("email"));
+                int age = cursor.getInt(cursor.getColumnIndex("age"));
+                results.append("Name: ").append(name).append("\n")
+                        .append("Email: ").append(email).append("\n")
+                        .append("Age: ").append(age).append("\n\n");
+            } while (cursor.moveToNext());
+        }
+        // Set the results to TextView
+        textViewResults.setText(results.toString());
+    }
+}
+
+
+
+
+
+
+
+
+
+java class
+
+
+
+
+
+
+  package com.example.datasql;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+public class DatabaseHelper extends SQLiteOpenHelper {
+    // Database version and name
+    private static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "UserData.db";
+    // Table and columns
+
+    private static final String TABLE_USERS = "users";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_EMAIL = "email";
+    private static final String COLUMN_AGE = "age";
+    // Create table SQL query
+    private static final String CREATE_TABLE_USERS = "CREATE TABLE " + TABLE_USERS + "("
+            + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_NAME + " TEXT, "
+            + COLUMN_EMAIL + " TEXT, "
+            + COLUMN_AGE + " INTEGER"
+            + ");";
+    // Constructor
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+    // Called when the database is created
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_TABLE_USERS);
+    }
+    // Called when the database version is upgraded
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        onCreate(db);
+    }
+    // Insert data into the users table
+    public void insertUser(String name, String email, int age) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String insertQuery = "INSERT INTO " + TABLE_USERS + " (" + COLUMN_NAME + ", " +
+                COLUMN_EMAIL + ", " + COLUMN_AGE + ") "
+                + "VALUES ('" + name + "', '" + email + "', " + age + ");";
+        db.execSQL(insertQuery);
+        db.close();
+    }
+    // Read all users from the database
+    public Cursor getAllUsers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_USERS, null);
+    }
+}
+          
+
+
+          
+
+          
