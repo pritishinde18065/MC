@@ -1,0 +1,223 @@
+XML
+
+<?xml version="1.0" encoding="utf-8"?>
+    <android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/first_number"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:hint="@string/first_number_hint"
+        android:inputType="numberDecimal"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/second_number"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:hint="@string/second_number_hint"
+        android:inputType="numberDecimal"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/first_number"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="0dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="34dp"
+        android:textSize="30sp"
+        android:text="@string/add_button_symbol"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/second_number" />
+
+    <Button
+        android:id="@+id/subtract_button"
+        android:layout_width="90dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginEnd="29dp"
+        android:textSize="30sp"
+        android:text="@string/subtract_button_symbol"
+        app:layout_constraintEnd_toStartOf="@+id/multiply_button"
+        app:layout_constraintStart_toEndOf="@+id/add_button"
+        app:layout_constraintTop_toBottomOf="@+id/second_number" />
+
+    <Button
+        android:id="@+id/multiply_button"
+        android:layout_width="90dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="33dp"
+        android:text="@string/multiply_button_symbol"
+        android:textSize="30sp"
+        app:layout_constraintStart_toEndOf="@+id/subtract_button"
+        app:layout_constraintTop_toBottomOf="@+id/second_number" />
+
+    <Button
+        android:id="@+id/divide_button"
+        android:layout_width="0dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="32dp"
+        android:textSize="30sp"
+        android:text="@string/divide_button_symbol"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_button" />
+
+    <Button
+        android:id="@+id/power_button"
+        android:layout_width="90dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="29dp"
+        android:textSize="30sp"
+        android:text="@string/power_button_symbol"
+        app:layout_constraintEnd_toStartOf="@+id/modulus_button6"
+        app:layout_constraintStart_toEndOf="@+id/divide_button"
+        app:layout_constraintTop_toBottomOf="@+id/subtract_button" />
+
+    <Button
+        android:id="@+id/modulus_button6"
+        android:layout_width="90dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="32dp"
+        android:textSize="30sp"
+        android:text="@string/module_button_symbol"
+        app:layout_constraintStart_toEndOf="@+id/power_button"
+        app:layout_constraintTop_toBottomOf="@+id/multiply_button" />
+
+    <TextView
+        android:id="@+id/result_text"
+        android:layout_width="93dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="72dp"
+        android:text="@string/result_text_default"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divide_button" />
+
+</android.support.constraint.ConstraintLayout>
+
+
+
+
+
+JAVA 
+
+package com.example.calculator2;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
+
+public class MainActivity extends AppCompatActivity {
+    private EditText firstNumber, secondNumber;
+    private TextView resultText;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        firstNumber = findViewById(R.id.first_number);
+        secondNumber = findViewById(R.id.second_number);
+        resultText = findViewById(R.id.result_text);
+
+        Button addButton = findViewById(R.id.add_button);
+        Button subtractButton = findViewById(R.id.subtract_button);
+        Button multiplyButton = findViewById(R.id.multiply_button);
+        Button divideButton = findViewById(R.id.divide_button);
+        Button powerButton = findViewById(R.id.power_button);
+        Button modulusButton = findViewById(R.id.modulus_button6);
+
+        addButton.setOnClickListener(v -> performCalculation("+"));
+        subtractButton.setOnClickListener(v -> performCalculation("-"));
+        multiplyButton.setOnClickListener(v -> performCalculation("*"));
+        divideButton.setOnClickListener(v -> performCalculation("/"));
+        powerButton.setOnClickListener(v -> performCalculation("^"));
+        modulusButton.setOnClickListener(v -> performCalculation("%"));
+    }
+
+    private void performCalculation(String operation) {
+        String num1Str = firstNumber.getText().toString();
+        String num2Str = secondNumber.getText().toString();
+
+        if (num1Str.isEmpty() || num2Str.isEmpty()) {
+            Toast.makeText(this,"Cannot divide by zero",Toast.LENGTH_SHORT).show();
+
+            return;
+        }
+
+        double num1 = Double.parseDouble(num1Str);
+        double num2 = Double.parseDouble(num2Str);
+        double result = 0;
+
+        switch (operation) {
+            case "+":
+                result = num1 + num2;
+                break;
+            case "-":
+                result = num1 - num2;
+                break;
+            case "*":
+                result = num1 * num2;
+                break;
+            case "/":
+                if (num2 == 0) {
+                    Toast.makeText(this,"Cannot divide by zero",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                result = num1 / num2;
+                break;
+            case "^":
+                result = Math.pow(num1, num2);
+                break;
+            case "%":
+                result = num1 % num2;
+                break;
+        }
+
+        // Display result
+        resultText.setText("Result: " + result);
+    }
+} 
+
+
+
+STRING.XML
+<resources>
+    <string name="app_name">Simple Addition App</string>
+    <string name="first_number_hint">Enter First Number</string>
+    <string name="second_number_hint">Enter Second Number</string>
+    <string name="add_button_symbol">+</string>
+    <string name="subtract_button_symbol">-</string>
+    <string name="multiply_button_symbol">*</string>
+    <string name="divide_button_symbol">/</string>
+    <string name="power_button_symbol">^</string>
+    <string name="module_button_symbol">%</string>
+    <string name="result_text_default">Result</string>
+
+</resources>
