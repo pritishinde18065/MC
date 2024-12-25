@@ -1,0 +1,256 @@
+xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#E0F7FA">
+
+    <TextView
+        android:id="@+id/heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Temperature Converter"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#00796B"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/inputTemperature"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:hint="Enter temperature"
+        android:inputType="numberDecimal"
+        android:padding="15dp"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:text="Select Input Unit:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="23sp"
+        android:textStyle="bold"
+        android:textColor="#004D40"/>
+
+    <RadioGroup
+        android:id="@+id/inputUnitGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioCelsius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Celsius"
+            android:textColor="#004D40"/>
+
+        <RadioButton
+            android:id="@+id/radioFahrenheit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Fahrenheit"
+            android:textColor="#004D40"/>
+
+        <RadioButton
+            android:id="@+id/radioKelvin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Kelvin"
+            android:textColor="#004D40"/>
+    </RadioGroup>
+
+    <TextView
+        android:text="Convert to:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="23sp"
+        android:textColor="#004D40"
+        android:textStyle="bold"/>
+
+    <RadioGroup
+        android:id="@+id/outputUnitGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioConvertToCelsius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Celsius"
+            android:textColor="#004D40"/>
+
+        <RadioButton
+            android:id="@+id/radioConvertToFahrenheit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Fahrenheit"
+            android:textColor="#004D40"/>
+
+        <RadioButton
+            android:id="@+id/radioConvertToKelvin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="Kelvin"
+            android:textColor="#004D40"/>
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/convertButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Convert"
+            android:background="#00796B"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginEnd="32dp"/>
+
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Clear"
+            android:background="#BDBDBD"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:text="Output:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#004D40"/>
+
+    <TextView
+        android:id="@+id/outputTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:textColor="#FF5722"/>
+</LinearLayout>
+
+
+
+java
+
+
+package com.example.temprature;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    private EditText inputTemperature;
+    private RadioGroup inputUnitGroup;
+    private RadioGroup outputUnitGroup;
+    private TextView outputTemperature;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        inputTemperature = findViewById(R.id.inputTemperature);
+        inputUnitGroup = findViewById(R.id.inputUnitGroup);
+        outputUnitGroup = findViewById(R.id.outputUnitGroup);
+        outputTemperature = findViewById(R.id.outputTemperature);
+
+        Button convertButton = findViewById(R.id.convertButton);
+        Button clearButton = findViewById(R.id.clearButton);
+
+        convertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                convertTemperature();
+            }
+        });
+
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearFields();
+            }
+        });
+    }
+
+    private void convertTemperature() {
+        String inputTempStr = inputTemperature.getText().toString();
+        if (inputTempStr.isEmpty()) {
+            Toast.makeText(this, "Please enter a temperature", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double inputTemp = Double.parseDouble(inputTempStr);
+        int inputUnitId = inputUnitGroup.getCheckedRadioButtonId();
+        int outputUnitId = outputUnitGroup.getCheckedRadioButtonId();
+
+        if (inputUnitId == -1 || outputUnitId == -1) {
+            Toast.makeText(this, "Please select both input and output units", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double outputTemp = 0;
+
+        // Convert input temperature to Celsius first
+        if (inputUnitId == R.id.radioCelsius) {
+            outputTemp = inputTemp; // Already in Celsius
+        } else if (inputUnitId == R.id.radioFahrenheit) {
+            outputTemp = (inputTemp - 32) * 5 / 9; // Convert to Celsius
+        } else if (inputUnitId == R.id.radioKelvin) {
+            outputTemp = inputTemp - 273.15; // Convert to Celsius
+        }
+
+        // Convert from Celsius to desired output unit
+        if (outputUnitId == R.id.radioConvertToCelsius) {
+            // outputTemp is already in Celsius
+        } else if (outputUnitId == R.id.radioConvertToFahrenheit) {
+            outputTemp = (outputTemp * 9 / 5) + 32; // Convert to Fahrenheit
+        } else if (outputUnitId == R.id.radioConvertToKelvin) {
+            outputTemp = outputTemp + 273.15; // Convert to Kelvin
+        }
+
+        outputTemperature.setText(String.format("%.2f", outputTemp));
+    }
+
+    private void clearFields() {
+        inputTemperature.setText("");
+        inputUnitGroup.clearCheck();
+        outputUnitGroup.clearCheck();
+        outputTemperature.setText("");
+    }
+}
