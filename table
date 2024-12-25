@@ -1,0 +1,25 @@
+<!-- res/layout/activity_table.xml -->
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent">
+ <TableRow>
+ <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Row 1, Col 1" />
+ <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Row 1, Col 2" />
+ </TableRow>
+ <TableRow>
+ <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Row 2, Col 1" />
+ <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Row 2, Col 2" />
+ </TableRow>
+</TableLayout>
